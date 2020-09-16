@@ -13,19 +13,22 @@ from pystxmtools.corrections.register import register_frames_stack
 def test_stack():
     image = data.camera()
     n_frames = 10
-    shifts = [(round(random.uniform(1, 50), 2), round(random.uniform(1, 50), 2)) for i in range(n_frames)]
-    stack = []
+    # shifts = (round(random.uniform(1, 50), 2), round(random.uniform(1, 50), 2))
+    im_shift_stack = []
     for n in range(n_frames):
-        stack.append(shift(image, shifts[n]))
-    return np.asarray(stack), shifts
+        shifts = (round(random.uniform(1, 50), 2), round(random.uniform(1, 50), 2))
+        el = [shift(image, shifts), 0]
+        im_shift_stack.append(el)
+    return np.asarray(im_shift_stack)
+
 
 def test_register_frame_stack(test_stack):
-    aligned_frames = register_frames_stack(test_stack[0], mode='translation')
-    shifts_calc = register_frames_stack(test_stack[1])
-    print(aligned_frames.shape)
-    print(test_stack.shape)
+    "Test something in register_frame_stack "
+    aligned_frames, calc_shifts = register_frames_stack(frames=test_stack[:,0])
 
-    assert aligned_frames.shape[0] == test_stack[0].shape[0]
-    assert shifts_calc == test_stack[1]
+    assert aligned_frames.shape[0] == test_stack[:,0].shape[0]
+    assert calc_shifts == test_stack[:,1]
 
 
+# if __name__ == "__main__":
+#     test_stack()
