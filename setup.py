@@ -54,9 +54,11 @@ setup(
                                           "calc_optical_density = pystxmtools.corrections.optical_density:calc_opt_density_operation",
                                           "get_I0_mask = pystxmtools.corrections.optical_density:calc_I0_mask_operation",
                                           "register_stack = pystxmtools.corrections.register:register_operation",
+                                          "mosaic_registration = pystxmtools.corrections.mosaic_registration:mosaic_register_operation",
                                           "lin_fit_spectra = pystxmtools.corrections.fitting:lin_fit_operation",
                                           "lstsq_fit = pystxmtools.corrections.fitting:lsq_fit_operation",
-                                          "nn_lstsq = pystxmtools.corrections.fitting:nn_lsq_fit_operation"]
+                                          "nn_lstsq = pystxmtools.corrections.fitting:nn_lsq_fit_operation",
+                                          "cropping = pystxmtools.corrections.cropping:cropping_operation"]
         # "databroker.handlers": [
         #     "JPEG = xicam.catalog_viewer.image_handlers:JPEGHandler",
         #     "TIFF = xicam.catalog_viewer.image_handlers:TIFFHandler",
