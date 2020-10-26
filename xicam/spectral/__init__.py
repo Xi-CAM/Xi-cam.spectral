@@ -91,7 +91,7 @@ class SpectralPlugin(GUIPlugin):
                                                callback_slot=self.append_treatment,
                                                finished_slot=self.show_treatment,
                                                kwargs_callable=self.treatment_kwargs,
-                                               execute_iterative=True)
+                                               execute_iterative=False)
 
         self.stages = {
             "Acquire": GUILayout(QWidget()),
