@@ -1,5 +1,6 @@
 import numpy as np
 import xarray as xr
+
 from databroker.in_memory import BlueskyInMemoryCatalog
 from qtpy.QtWidgets import QLabel, QComboBox, QHBoxLayout, QWidget, QSpacerItem, QSizePolicy
 
@@ -15,9 +16,10 @@ from xicam.gui.widgets.library import LibraryWidget
 from xicam.gui.widgets.linearworkfloweditor import WorkflowEditor
 from databroker.core import BlueskyRun
 from xicam.core.execution import Workflow
+from xicam.core.intents import Intent
 from xicam.plugins import GUIPlugin
 from ..widgets.image_viewers import CatalogViewerBlend
-from ..projectors import project_nxSTXM, project_all
+from ..projectors import project_all
 
 
 class SpectralBase(GUIPlugin):
@@ -44,7 +46,12 @@ class SpectralBase(GUIPlugin):
 
         # FIXME: Putting this here for now...
         self.current_data = None
-        return {'data': project_all(self.current_catalog)}
+        projected_data = project_all(self.current_catalog)
+        #FIXME how to handle different projector outputs such as list of intents or actual data array
+        if isinstance(projected_data, list):
+            return {'data': projected_data[0].image}
+        else:
+            return {'data': projected_data}
 
     def append_treatment(self, result_set):
         if self.current_data is None:
@@ -59,12 +66,11 @@ class SpectralBase(GUIPlugin):
         # catalog.metadata.update(self.schema())
         ensemble = Ensemble()
         ensemble.append_catalog(run_catalog)
-        self.ensemble_model.add_ensemble(ensemble, project_nxSTXM)
+        self.ensemble_model.add_ensemble(ensemble, project_all)
 
         try:
-            # Apply nxSTXM projection
-            xdata = project_nxSTXM(run_catalog)
-
+            # Apply projection
+            xdata = project_all(run_catalog)
             self.catalog_viewer.setData(xdata, view_dims=('y (μm)', 'x (μm)'))
 
         except Exception as e:
