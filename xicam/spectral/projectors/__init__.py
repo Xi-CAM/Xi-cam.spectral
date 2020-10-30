@@ -16,8 +16,7 @@ def project_nxSTXM(run_catalog: BlueskyRun):
     xdata = np.squeeze(xdata)
 
     xdata = xdata.assign_coords({xdata.dims[0]: energy, xdata.dims[2]: sample_x, xdata.dims[1]: sample_y})
-    #TODO return intents
-    return xdata
+    return [ImageIntent(item_name='hyperspectral_data', image=xdata)]
 
 
 def project_nxCXI_ptycho(run_catalog: BlueskyRun):
