@@ -49,7 +49,8 @@ class SpectralBase(GUIPlugin):
         projected_data = project_all(self.current_catalog)
         #FIXME how to handle different projector outputs such as list of intents or actual data array
         if isinstance(projected_data, list):
-            return {'data': projected_data[0].image}
+            data_intent = next(filter(lambda intent: intent.name=='hyperspectral_data', projected_data))
+            return {'data': data_intent.image}
         else:
             return {'data': projected_data}
 
