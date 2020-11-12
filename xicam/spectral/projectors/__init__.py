@@ -5,18 +5,20 @@ from xicam.core.intents import ImageIntent
 
 
 def project_nxSTXM(run_catalog: BlueskyRun):
-    _, projection = next(filter(lambda projection: projection[0] == 'nxSTXM', run_catalog.metadata['start']['projections']))
-    stream, field = projection['irmap/DATA/data']
-    sample_x = projection['irmap/DATA/sample_x']
-    sample_y = projection['irmap/DATA/sample_y']
-    energy = projection['irmap/DATA/energy']
+    projection = next(filter(lambda projection: projection['name'] == 'nxSTXM', run_catalog.metadata['start']['projections']))['projection']
+    stream = projection['irmap/DATA/data']['stream']
+    field = projection['irmap/DATA/data']['field']
+    sample_x = projection['irmap/DATA/sample_x']['value']
+    sample_y = projection['irmap/DATA/sample_y']['value']
+    energy = projection['irmap/DATA/energy']['value']
 
     xdata = getattr(run_catalog, stream).to_dask()[field]  # type: xr.DataArray
 
     xdata = np.squeeze(xdata)
 
     xdata = xdata.assign_coords({xdata.dims[0]: energy, xdata.dims[2]: sample_x, xdata.dims[1]: sample_y})
-    return [ImageIntent(item_name='hyperspectral_data', image=xdata)]
+
+    return xdata.transpose('y (μm)', 'x (μm)', ...)
 
 
 def project_nxCXI_ptycho(run_catalog: BlueskyRun):
@@ -45,8 +47,23 @@ def project_nxCXI_ptycho(run_catalog: BlueskyRun):
             ]
 
 
+def project_arpes(catalog):
+    # TODO: single-source
+    ENERGY_FIELD = 'E (eV)'
+    SAMPLE_X_FIELD = 'x (μm)'
+    SAMPLE_Y_FIELD = 'y (μm)'
+    ANGLE_FIELD = '???'
+
+    data = catalog.primary.to_dask()
+    raw_data = data['raw'][0]
+    raw_data = raw_data.assign_coords({name: np.asarray(data[name][0])
+                                       for name in raw_data.dims})
+    return raw_data
+
+
 projection_mapping = {'NXcxi_ptycho': project_nxCXI_ptycho,
-                      'nxSTXM': project_nxSTXM}
+                      'nxSTXM': project_nxSTXM,
+                      'arpes': project_arpes}
 
 
 def project_all(run_catalog: BlueskyRun):
