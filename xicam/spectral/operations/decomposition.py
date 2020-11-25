@@ -3,7 +3,10 @@ from typing import Union
 import numpy as np
 from sklearn.decomposition import PCA, NMF
 import umap
-from xicam.plugins.operationplugin import operation, categories, display_name, output_names, visible, input_names
+
+from xicam.core.intents import ImageIntent, PlotIntent, BarIntent, PairPlotIntent
+from xicam.plugins.operationplugin import operation, categories, display_name, output_names, visible, input_names, \
+    intent
 
 
 class svd_solver(enum.Enum):
@@ -17,13 +20,28 @@ class svd_solver(enum.Enum):
 @categories('Decomposition')
 # @categories(('Spectral Imaging', 'Decomposition'), ('BSISB', 'Decomposition'))
 @display_name('PCA (Principal Component Analysis')
-@output_names('data')
+@output_names('transform_data',
+              *[f'image{i}' for i in range(3)],
+              'variance',
+              *[f'component{i}' for i in range(3)],
+              'energy')
 @visible('data', False)
-@input_names(None, 'Number of components', 'Copy', 'Whiten', 'SVD Solver', 'Tolerance', 'Iterated Power', 'Random State')
-def pca(data:np.ndarray, n_components:Union[int, float, str]=None, copy:bool=True, whiten:bool=False, svd_solver:svd_solver='auto', tol:float=0.0, iterated_power:Union[str, int]='auto', random_state:int=None):
+# @input_names('data', 'Number of components', 'Copy', 'Whiten', 'SVD Solver', 'Tolerance', 'Iterated Power', 'Random State')
+@intent(PairPlotIntent, "Pair Plot", output_map={"transform_data": "transform_data"})
+@intent(ImageIntent, "PCA Transform0", output_map={"image": "image0"})
+@intent(ImageIntent, "PCA Transform1", output_map={"image": "image1"})
+@intent(ImageIntent, "PCA Transform2", output_map={"image": "image2"})
+@intent(BarIntent, "Variance Ratio", x=[1,2,3], width=1, output_map={"height": "variance"}, labels={'left': 'Variance Ratio'})
+@intent(PlotIntent, "Component 0", match_key='components', output_map={"y": "component0", 'x': 'energy'}, labels={'left': 'PCA 1', 'bottom': 'Energy (eV)'})
+@intent(PlotIntent, "Component 1", match_key='components', output_map={"y": "component1", 'x': 'energy'}, labels={'left': 'PCA 2', 'bottom': 'Energy (eV)'})
+@intent(PlotIntent, "Component 2", match_key='components', output_map={"y": "component2", 'x': 'energy'}, labels={'left': 'PCA 3', 'bottom': 'Energy (eV)'})
+def pca(data:np.ndarray, n_components:Union[int, float, str]=3, copy:bool=True, whiten:bool=False, svd_solver:svd_solver='auto', tol:float=0.0, iterated_power:Union[str, int]='auto', random_state:int=None):
     pca = PCA(n_components, copy=copy, whiten=whiten, svd_solver=svd_solver, tol=tol, iterated_power=iterated_power, random_state=random_state)
-    pca.fit(data)
-    return pca.transform(data)
+
+    pca.fit(np.asarray(data).reshape(-1, data.shape[2]))
+    images = pca.transform(np.asarray(data).reshape(-1, data.shape[2])).reshape(data.shape[0],data.shape[1], 3)
+
+    return images, images[:,:,0], images[:,:,1], images[:,:,2], pca.explained_variance_ratio_, pca.components_[0], pca.components_[1], pca.components_[2], data.coords['E (eV)']
 
 
 class init(enum.Enum):
@@ -32,9 +50,11 @@ class init(enum.Enum):
     nndsvdar='nndsvdar'
     custom='custom'
 
+
 class solver(enum.Enum):
     cd='cd'
     mu='mu'
+
 
 class beta_loss(enum.Enum):
     frobenius='frobenius'
