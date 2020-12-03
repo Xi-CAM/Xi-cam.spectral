@@ -67,6 +67,11 @@ def ingest_NXarpes(paths):
 
     dim0 = f"{f[0].header['NM_0_0']} ({f[0].header['UN_0_0']})"
     dim1 = f"{f[0].header['NM_0_1']} ({f[0].header['UN_0_1']})"
+    
+    # TODO: length mismatch between energy shape and data shape[-1] (energy).
+    # is this occurring because of arange and floats (see arange's documentation on its return value)
+    if len(energy) != data.shape[-1]:
+      energy = energy[:-1]
 
     xarray = DataArray(data, dims=[dim1, dim0, ANGLE_FIELD, ENERGY_FIELD],
                        coords=[sample_y, sample_x, unknown_axis_coords, energy])
