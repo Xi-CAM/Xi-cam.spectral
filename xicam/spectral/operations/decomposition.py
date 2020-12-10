@@ -35,11 +35,15 @@ class svd_solver(enum.Enum):
 @intent(PlotIntent, "Component 0", match_key='components', output_map={"y": "component0", 'x': 'energy'}, labels={'left': 'PCA 1', 'bottom': 'Energy (eV)'})
 @intent(PlotIntent, "Component 1", match_key='components', output_map={"y": "component1", 'x': 'energy'}, labels={'left': 'PCA 2', 'bottom': 'Energy (eV)'})
 @intent(PlotIntent, "Component 2", match_key='components', output_map={"y": "component2", 'x': 'energy'}, labels={'left': 'PCA 3', 'bottom': 'Energy (eV)'})
-def pca(data:np.ndarray, n_components:Union[int, float, str]=3, copy:bool=True, whiten:bool=False, svd_solver:svd_solver='auto', tol:float=0.0, iterated_power:Union[str, int]='auto', random_state:int=None):
+def pca(data:np.ndarray, energy_axis_last:bool = True, n_components:Union[int, float, str]=3, copy:bool=True, whiten:bool=False, svd_solver:svd_solver='auto', tol:float=0.0, iterated_power:Union[str, int]='auto', random_state:int=None):
     pca = PCA(n_components, copy=copy, whiten=whiten, svd_solver=svd_solver, tol=tol, iterated_power=iterated_power, random_state=random_state)
 
-    pca.fit(np.asarray(data).reshape(-1, data.shape[2]))
-    images = pca.transform(np.asarray(data).reshape(-1, data.shape[2])).reshape(data.shape[0],data.shape[1], 3)
+    if energy_axis_last:
+        pca.fit(np.asarray(data).reshape(-1, data.shape[2]))
+        images = pca.transform(np.asarray(data).reshape(-1, data.shape[2])).reshape(data.shape[0],data.shape[1], 3)
+    else:
+        pca.fit(np.asarray(data).reshape(-1, data.shape[0]))
+        images = pca.transform(np.asarray(data).reshape(-1, data.shape[0])).reshape(data.shape[1], data.shape[2], 3)
 
     return images, images[:,:,0], images[:,:,1], images[:,:,2], pca.explained_variance_ratio_, pca.components_[0], pca.components_[1], pca.components_[2], data.coords['E (eV)']
 
