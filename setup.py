@@ -51,6 +51,7 @@ setup(
                                           "nl_means_filter = pystxmtools.corrections.filter:nl_means_filter_operation",
                                           "despike = pystxmtools.corrections.filter:despike_operation",
                                           "denoise = pystxmtools.corrections.filter:denoise_operation",
+                                          "decomposition = xicam.spectral.operations.decomposition:pca",
                                           "calc_optical_density = pystxmtools.corrections.optical_density:calc_opt_density_operation",
                                           "get_I0_mask = pystxmtools.corrections.optical_density:calc_I0_mask_operation",
                                           "register_stack = pystxmtools.corrections.register:register_operation",
