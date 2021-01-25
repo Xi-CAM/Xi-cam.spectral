@@ -51,7 +51,7 @@ def pca(data:np.ndarray,
 
     if energy_axis_last:
         pca.fit(np.asarray(data).reshape(-1, data.shape[2]))
-        images = pca.transform(np.asarray(data).reshape(-1, data.shape[2])).reshape(data.shape[0],data.shape[1], 3)
+        images = pca.transform(np.asarray(data).reshape(-1, data.shape[2])).reshape(data.shape[0], data.shape[1], 3)
     else:
         pca.fit(np.asarray(data).reshape(-1, data.shape[0]))
         images = pca.transform(np.asarray(data).reshape(-1, data.shape[0])).reshape(data.shape[1], data.shape[2], 3)

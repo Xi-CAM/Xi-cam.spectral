@@ -39,8 +39,16 @@ def project_nxCXI_ptycho(run_catalog: BlueskyRun):
     rec_data_phase = getattr(run_catalog, phase_rec_stream).to_dask()[phase_rec_field]
     rec_data_phase = np.squeeze(rec_data_phase)
 
-    rec_data_trans = rec_data_trans.assign_coords(
-        {rec_data_trans.dims[0]: energy, rec_data_trans.dims[1]: coords_y, rec_data_trans.dims[2]: coords_x})
+    if rec_data_trans.dims[0] == 'E (eV)':
+        rec_data_trans = rec_data_trans.assign_coords({rec_data_trans.dims[0]: energy,
+                                                       rec_data_trans.dims[1]: coords_y,
+                                                       rec_data_trans.dims[2]: coords_x})
+    elif rec_data_trans.dims[0] == 'y (nm)':
+        rec_data_trans = rec_data_trans.assign_coords({rec_data_trans.dims[0]: coords_y,
+                                                       rec_data_trans.dims[1]: coords_x})
+
+
+
     #TODO add imagemixins to display complex
     return [ImageIntent(item_name='hyperspectral_data', image=rec_data_trans),
                 # ImageIntent(image=rec_data_phase, item_name='phase reconstruction')
