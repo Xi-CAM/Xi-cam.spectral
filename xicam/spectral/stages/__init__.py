@@ -7,6 +7,7 @@ from qtpy.QtWidgets import QLabel, QComboBox, QHBoxLayout, QWidget, QSpacerItem,
 from xicam.core import msg
 from xicam.core.execution.workflow import project_intents, ingest_result_set
 from xicam.core.workspace import Ensemble
+from xicam.core.intents import ImageIntent
 from xicam.gui.models import EnsembleModel, IntentsModel
 from xicam.gui.widgets.ndimageview import NDImageView
 from xicam.gui.widgets.views import DataSelectorView, StackedCanvasView
@@ -70,7 +71,17 @@ class SpectralBase(GUIPlugin):
 
         try:
             # Apply nxSTXM projection
+
+
+            #add conditional to split xarray from intent
             xdata = project_all(run_catalog)
+            if isinstance(xdata, list): # temporary logic to allow for intents to be returned rather than xarray
+                for intent in xdata:
+                    if isinstance(intent, ImageIntent):
+                        xdata = intent.image
+                        break
+                else:
+                    raise ValueError("No data returned from ingestion.")
 
             self.catalog_viewer.setData(xdata)#, view_dims=('y (μm)', 'x (μm)')
 

@@ -3,6 +3,7 @@ from databroker.core import BlueskyRun
 
 from xicam.core.intents import ImageIntent
 
+#TODO: check axes and transpose accrodingly
 
 def project_nxSTXM(run_catalog: BlueskyRun):
     projection = next(filter(lambda projection: projection['name'] == 'nxSTXM', run_catalog.metadata['start']['projections']))['projection']
