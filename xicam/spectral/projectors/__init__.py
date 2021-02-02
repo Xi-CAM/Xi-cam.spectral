@@ -14,12 +14,10 @@ def project_nxSTXM(run_catalog: BlueskyRun):
     energy = projection['irmap/DATA/energy']['value']
 
     xdata = getattr(run_catalog, stream).to_dask()[field]  # type: xr.DataArray
-
     xdata = np.squeeze(xdata)
-
     xdata = xdata.assign_coords({xdata.dims[0]: energy, xdata.dims[2]: sample_x, xdata.dims[1]: sample_y})
 
-    return xdata.transpose('y (μm)', 'x (μm)', ...)
+    return [ImageIntent(item_name='IR maps', image=xdata),]
 
 
 def project_nxCXI_ptycho(run_catalog: BlueskyRun):
@@ -49,9 +47,8 @@ def project_nxCXI_ptycho(run_catalog: BlueskyRun):
                                                        rec_data_trans.dims[1]: coords_x})
 
 
-
     #TODO add imagemixins to display complex
-    return [ImageIntent(item_name='hyperspectral_data', image=rec_data_trans),
+    return [ImageIntent(item_name='ptychography data', image=rec_data_trans),
                 # ImageIntent(image=rec_data_phase, item_name='phase reconstruction')
             ]
 

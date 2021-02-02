@@ -44,12 +44,13 @@ class SpectralBase(GUIPlugin):
         super(SpectralBase, self).__init__()
 
     def treatment_kwargs(self, workflow):
+        intent_name = ['hyperspectral_data', 'ptychography data', 'IR maps']
 
         # FIXME: Putting this here for now...
         self.current_data = None
         projected_data = project_all(self.current_catalog)
         if isinstance(projected_data, list):
-            data_intent = next(filter(lambda intent: intent.item_name=='hyperspectral_data', iter(projected_data)))
+            data_intent = next(filter(lambda intent: intent.item_name in intent_name, iter(projected_data)))
             return {'data': data_intent.image}
         else:
             return {'data': projected_data}
