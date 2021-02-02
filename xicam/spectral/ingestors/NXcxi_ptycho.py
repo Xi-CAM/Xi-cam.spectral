@@ -67,7 +67,7 @@ def ingest_cxi(paths):
     # TODO check if energies are "continuous" or have interruptions
     # the removal of last for entries is only temporary due to the example dataset
     # FIXME what to do if some energies are 'out of range'?
-    # del sorted_entry_list[-4:]
+    del sorted_entry_list[-4:]
 
     frames_stack = []
     rec_stack = []
