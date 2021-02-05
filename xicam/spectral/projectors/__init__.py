@@ -45,8 +45,6 @@ def project_nxCXI_ptycho(run_catalog: BlueskyRun):
     elif rec_data_trans.dims[0] == 'y (nm)':
         rec_data_trans = rec_data_trans.assign_coords({rec_data_trans.dims[0]: coords_y,
                                                        rec_data_trans.dims[1]: coords_x})
-
-
     #TODO add imagemixins to display complex
     return [ImageIntent(item_name='ptychography data', image=rec_data_trans),
                 # ImageIntent(image=rec_data_phase, item_name='phase reconstruction')
