@@ -66,6 +66,7 @@ def ingest_cxi(paths):
     sorted_entry_list = sorted(h5_entry_dict.items(), key=lambda item: item[1])
     # TODO check if energies are "continuous" or have interruptions
     # the removal of last for entries is only temporary due to the example dataset
+    # FIXME what to do if some energies are 'out of range'?
     del sorted_entry_list[-4:]
 
     frames_stack = []

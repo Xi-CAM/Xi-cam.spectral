@@ -14,12 +14,10 @@ def project_nxSTXM(run_catalog: BlueskyRun):
     energy = projection['irmap/DATA/energy']['value']
 
     xdata = getattr(run_catalog, stream).to_dask()[field]  # type: xr.DataArray
-
     xdata = np.squeeze(xdata)
-
     xdata = xdata.assign_coords({xdata.dims[0]: energy, xdata.dims[2]: sample_x, xdata.dims[1]: sample_y})
 
-    return xdata.transpose('y (μm)', 'x (μm)', ...)
+    return [ImageIntent(item_name='IR maps', image=xdata),]
 
 
 def project_nxCXI_ptycho(run_catalog: BlueskyRun):
@@ -40,10 +38,13 @@ def project_nxCXI_ptycho(run_catalog: BlueskyRun):
     rec_data_phase = getattr(run_catalog, phase_rec_stream).to_dask()[phase_rec_field]
     rec_data_phase = np.squeeze(rec_data_phase)
 
-    rec_data_trans = rec_data_trans.assign_coords(
-        {rec_data_trans.dims[0]: energy, rec_data_trans.dims[1]: coords_y, rec_data_trans.dims[2]: coords_x})
 
-    return [ImageIntent(item_name='Transmission Reconstruction', image=rec_data_trans),
+    rec_data_trans = rec_data_trans.assign_coords({rec_data_trans.dims[0]: energy,
+                                                       rec_data_trans.dims[1]: coords_y,
+                                                       rec_data_trans.dims[2]: coords_x})
+
+    #TODO add imagemixins to display complex
+    return [ImageIntent(item_name='ptychography data', image=rec_data_trans),
                 # ImageIntent(image=rec_data_phase, item_name='phase reconstruction')
             ]
 

@@ -26,7 +26,7 @@ class svd_solver(enum.Enum):
               # *[f'component{i}' for i in range(3)],
               'energy', 'component_indices')
 @visible('data', False)
-# @input_names('data', 'Number of components', 'Copy', 'Whiten', 'SVD Solver', 'Tolerance', 'Iterated Power', 'Random State')
+# @input_names('data', 'energy axis is last', 'Number of components', 'Copy', 'Whiten', 'SVD Solver', 'Tolerance', 'Iterated Power', 'Random State')
 @intent(PairPlotIntent, "Pair Plot", output_map={"transform_data": "transform_data"})
 @intent(ImageIntent, "PCA Transform", output_map={"image": "transform_data", 'xvals': 'component_indices'}, mixins=['SliceSelector'], axes={'t': 2, 'x': 1, 'y': 0, 'c': None})
 @intent(ImageIntent, "False-color PCA Transform", output_map={"image": "transform_data", 'xvals': 'component_indices'}, axes={'t': None, 'x': 1, 'y': 0, 'c': 2})
@@ -37,9 +37,8 @@ class svd_solver(enum.Enum):
 def pca(data:np.ndarray, n_components:Union[int, float, str]=3, copy:bool=True, whiten:bool=False, svd_solver:svd_solver='auto', tol:float=0.0, iterated_power:Union[str, int]='auto', random_state:int=None):
     pca = PCA(n_components, copy=copy, whiten=whiten, svd_solver=svd_solver, tol=tol, iterated_power=iterated_power, random_state=random_state)
 
-    pca.fit(np.asarray(data).reshape(-1, data.shape[2]))
-    images = pca.transform(np.asarray(data).reshape(-1, data.shape[2])).reshape(data.shape[0],data.shape[1], n_components)
-
+    pca.fit(np.asarray(data).reshape(-1, data.shape[0]))
+    images = pca.transform(np.asarray(data).reshape(-1, data.shape[0])).reshape(data.shape[1], data.shape[2], 3)
     return images, pca.explained_variance_ratio_, pca.components_, data.coords['E (eV)'], np.arange(images.shape[-1])
 
 

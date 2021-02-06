@@ -7,24 +7,42 @@ import random
 from skimage import data
 from scipy.ndimage.interpolation import shift
 
-from shop.correction.register import register_frames_stack
+from pystxmtools.corrections.register import register_frames_stack
 
-@fixture
+# @fixture
 def test_stack():
     image = data.camera()
     n_frames = 10
-    shifts = [(round(random.uniform(1, 50), 2), round(random.uniform(1, 50), 2)) for i in range(n_frames)]
-    stack = []
+    # shifts = (round(random.uniform(1, 50), 2), round(random.uniform(1, 50), 2))
+    im_shift_stack = []
     for n in range(n_frames):
-        stack.append(shift(image, shifts[n]))
-    return np.asarray(stack)
+        shifts = (round(random.uniform(1, 50), 2), round(random.uniform(1, 50), 2))
+        el = [shift(image, shifts), shifts]
+        im_shift_stack.append(el)
+    return np.asarray(im_shift_stack)
 
-def test_register_frame_stack(test_stack):
+
+def test_register_frame_stack():
     "Test something in register_frame_stack "
-    aligned_frames = register_frames_stack(test_stack)
-    print(aligned_frames.shape)
-    print(test_stack.shape)
+    image = data.camera()
+    n_frames = 10
+    # shifts = (round(random.uniform(1, 50), 2), round(random.uniform(1, 50), 2))
+    im_stack = []
+    shift_stack = []
+    for n in range(n_frames-1):
+        shifts = [round(random.uniform(1, 50), 2), round(random.uniform(1, 50), 2)]
+        shift_stack.append(shifts)
 
-    assert aligned_frames.shape[0] == test_stack.shape[0]
+        shifted_frames = shift(image, shifts)
+        im_stack.append(shifted_frames)
+    # aligned_frames, calc_shifts = register_frames_stack(frames=test_stack[:,0])
+    aligned_frames, calc_shifts = register_frames_stack(np.asarray(im_stack))
+
+    return aligned_frames, calc_shifts, shift_stack, shifts, np.asarray(im_stack)
+
+    # assert calc_shifts == shift_stack
+    # assert calc_shifts == test_stack[:,1]
 
 
+if __name__ == "__main__":
+    test_stack()

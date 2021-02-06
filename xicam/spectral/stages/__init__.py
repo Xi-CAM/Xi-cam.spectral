@@ -1,5 +1,6 @@
 import numpy as np
 import xarray as xr
+
 from databroker.in_memory import BlueskyInMemoryCatalog
 from qtpy.QtWidgets import QLabel, QComboBox, QHBoxLayout, QWidget, QSpacerItem, QSizePolicy
 
@@ -16,9 +17,10 @@ from xicam.gui.widgets.library import LibraryWidget
 from xicam.gui.widgets.linearworkfloweditor import WorkflowEditor
 from databroker.core import BlueskyRun
 from xicam.core.execution import Workflow
+from xicam.core.intents import Intent
 from xicam.plugins import GUIPlugin
 from ..widgets.image_viewers import CatalogViewerBlend
-from ..projectors import project_nxSTXM, project_all
+from ..projectors import project_all
 
 
 class SpectralBase(GUIPlugin):
@@ -42,10 +44,16 @@ class SpectralBase(GUIPlugin):
         super(SpectralBase, self).__init__()
 
     def treatment_kwargs(self, workflow):
+        intent_name = ['hyperspectral_data', 'ptychography data', 'IR maps']
 
         # FIXME: Putting this here for now...
         self.current_data = None
-        return {'data': project_all(self.current_catalog)}
+        projected_data = project_all(self.current_catalog)
+        if isinstance(projected_data, list):
+            data_intent = next(filter(lambda intent: intent.item_name in intent_name, iter(projected_data)))
+            return {'data': data_intent.image}
+        else:
+            return {'data': projected_data}
 
     def append_treatment(self, result_set):
         if self.current_data is None:
