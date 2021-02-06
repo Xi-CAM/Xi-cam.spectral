@@ -37,11 +37,6 @@ class svd_solver(enum.Enum):
 def pca(data:np.ndarray, n_components:Union[int, float, str]=3, copy:bool=True, whiten:bool=False, svd_solver:svd_solver='auto', tol:float=0.0, iterated_power:Union[str, int]='auto', random_state:int=None):
     pca = PCA(n_components, copy=copy, whiten=whiten, svd_solver=svd_solver, tol=tol, iterated_power=iterated_power, random_state=random_state)
 
-    # try:
-    #     print('Energy axis last')
-    #     pca.fit(np.asarray(data).reshape(-1, data.shape[2]))
-    #     images = pca.transform(np.asarray(data).reshape(-1, data.shape[2])).reshape(data.shape[0], data.shape[1], 3)
-    # except:
     pca.fit(np.asarray(data).reshape(-1, data.shape[0]))
     images = pca.transform(np.asarray(data).reshape(-1, data.shape[0])).reshape(data.shape[1], data.shape[2], 3)
     return images, pca.explained_variance_ratio_, pca.components_, data.coords['E (eV)'], np.arange(images.shape[-1])
