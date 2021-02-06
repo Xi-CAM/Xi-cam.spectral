@@ -46,27 +46,6 @@ setup(
         "databroker.ingestors": ["application/x-hdf5 = xicam.spectral.ingestors.nxSTXM:ingest_nxSTXM",
                                  'application/x-fits = xicam.spectral.ingestors.arpes_fits:ingest_NXarpes',
                                  'application/x-cxi = xicam.spectral.ingestors:ingest_cxi'],
-        "xicam.plugins.OperationPlugin": ["wiener_filter = pystxmtools.corrections.filter:wiener_filter_operation",
-                                          "median_filter = pystxmtools.corrections.filter:median_filter_operation",
-                                          "nl_means_filter = pystxmtools.corrections.filter:nl_means_filter_operation",
-                                          "despike = pystxmtools.corrections.filter:despike_operation",
-                                          "denoise = pystxmtools.corrections.filter:denoise_operation",
-                                          "decomposition = xicam.spectral.operations.decomposition:pca",
-                                          "calc_optical_density = "
-                                          "pystxmtools.corrections.optical_density:calc_opt_density_operation",
-                                          "get_I0_mask = pystxmtools.corrections.optical_density:calc_I0_mask_operation",
-                                          "register_stack = pystxmtools.corrections.register:register_operation",
-                                          "mosaic_registration = "
-                                          "pystxmtools.corrections.mosaic_registration:mosaic_register_operation",
-                                          "lin_fit_spectra = pystxmtools.corrections.fitting:lin_fit_operation",
-                                          "lstsq_fit = pystxmtools.corrections.fitting:lsq_fit_operation",
-                                          "nn_lstsq = pystxmtools.corrections.fitting:nn_lsq_fit_operation",
-                                          "cropping = pystxmtools.corrections.cropping:cropping_operation",
-                                          "pic_mapping = pystxmtools.corrections.pic_functions:pic_mapping_operation",
-                                          "plot_amplitude_azimuth = "
-                                          "pystxmtools.corrections.pic_functions:plot_amplitude_azimuth_operation",
-                                          "plot_rgb_map = pystxmtools.corrections.pic_functions:plot_rgb_map_operation",
-                                          ]
         # "databroker.handlers": [
         #     "JPEG = xicam.catalog_viewer.image_handlers:JPEGHandler",
         #     "TIFF = xicam.catalog_viewer.image_handlers:TIFFHandler",
