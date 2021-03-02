@@ -1,5 +1,6 @@
 import numpy as np
 from databroker.core import BlueskyRun
+from xicam.core.data import ProjectionNotFound
 
 from xicam.core.intents import ImageIntent
 
@@ -17,13 +18,18 @@ def project_nxSTXM(run_catalog: BlueskyRun):
 
     xdata = np.squeeze(xdata)
 
+    # xdata = xdata.assign_coords({xdata.dims[0]: energy, xdata.dims[1]: sample_y, xdata.dims[2]: sample_x})
     xdata = xdata.assign_coords({xdata.dims[0]: energy, xdata.dims[2]: sample_x, xdata.dims[1]: sample_y})
 
     return xdata.transpose('y (μm)', 'x (μm)', ...)
 
 
 def project_nxCXI_ptycho(run_catalog: BlueskyRun):
-    projection = next(filter(lambda projection: projection['name'] == 'NXcxi_ptycho', run_catalog.metadata['start']['projections']))
+    projection = next(
+        filter(lambda projection: projection['name'] == 'NXcxi_ptycho', run_catalog.metadata['start']['projections']),
+        None)
+    if not projection:
+        raise ProjectionNotFound
 
     transmission_rec_stream = projection['projection']['object_transmission']['stream']
     transmission_rec_field = projection['projection']['object_transmission']['field']
@@ -43,8 +49,8 @@ def project_nxCXI_ptycho(run_catalog: BlueskyRun):
     rec_data_trans = rec_data_trans.assign_coords(
         {rec_data_trans.dims[0]: energy, rec_data_trans.dims[1]: coords_y, rec_data_trans.dims[2]: coords_x})
 
-    return [ImageIntent(item_name='Transmission Reconstruction', image=rec_data_trans),
-                # ImageIntent(image=rec_data_phase, item_name='phase reconstruction')
+    return [ImageIntent(name='Transmission Reconstruction', image=rec_data_trans),
+            # ImageIntent(image=rec_data_phase, item_name='phase reconstruction')
             ]
 
 

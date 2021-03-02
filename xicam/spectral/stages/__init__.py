@@ -18,7 +18,7 @@ from databroker.core import BlueskyRun
 from xicam.core.execution import Workflow
 from xicam.plugins import GUIPlugin
 from ..widgets.image_viewers import CatalogViewerBlend
-from ..projectors import project_nxSTXM, project_all
+from ..projectors import project_nxSTXM, project_all, projection_mapping
 
 
 class SpectralBase(GUIPlugin):
@@ -60,7 +60,7 @@ class SpectralBase(GUIPlugin):
         # catalog.metadata.update(self.schema())
         ensemble = Ensemble()
         ensemble.append_catalog(run_catalog)
-        self.ensemble_model.add_ensemble(ensemble, project_all)
+        self.ensemble_model.add_ensemble(ensemble, projection_mapping.values())
 
         try:
             # Apply nxSTXM projection
@@ -130,7 +130,7 @@ class MapStage(SpectralBase):
         run_catalog = catalog[-1]
         ####
         ensemble.append_catalog(run_catalog)
-        self.ensemble_model.add_ensemble(ensemble, project_intents)
+        self.ensemble_model.add_ensemble(ensemble, projection_mapping.values())
 
 
 class ClusteringStage(SpectralBase):
