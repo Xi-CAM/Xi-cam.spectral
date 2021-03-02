@@ -68,7 +68,7 @@ class SpectralBase(GUIPlugin):
         # catalog.metadata.update(self.schema())
         ensemble = Ensemble()
         ensemble.append_catalog(run_catalog)
-        self.ensemble_model.add_ensemble(ensemble, project_all)
+        self.ensemble_model.add_ensemble(ensemble, [project_all])
 
         try:
             # Apply nxSTXM projection
